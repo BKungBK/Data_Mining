@@ -23,6 +23,88 @@
     });
   }
 
+  function setupHomeWheelScroll() {
+    const finePointer = window.matchMedia("(pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let targetY = window.scrollY;
+    let frame = 0;
+    let previousFrameTime = 0;
+
+    function stop() {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      previousFrameTime = 0;
+      targetY = window.scrollY;
+    }
+
+    function maxScrollY() {
+      const root = document.scrollingElement || document.documentElement;
+      return Math.max(0, root.scrollHeight - window.innerHeight);
+    }
+
+    function animateScroll(timestamp) {
+      if (!app.querySelector(".home-page")) {
+        stop();
+        return;
+      }
+
+      const elapsed = previousFrameTime ? Math.min(48, timestamp - previousFrameTime) : 16;
+      previousFrameTime = timestamp;
+      const currentY = window.scrollY;
+      const distance = targetY - currentY;
+      if (Math.abs(distance) < .6) {
+        window.scrollTo(0, targetY);
+        frame = 0;
+        previousFrameTime = 0;
+        return;
+      }
+
+      const easingTime = reducedMotion.matches ? 64 : 92;
+      window.scrollTo(0, currentY + distance * (1 - Math.exp(-elapsed / easingTime)));
+      frame = requestAnimationFrame(animateScroll);
+    }
+
+    function scrollToY(destination) {
+      const currentTarget = frame ? targetY : window.scrollY;
+      const nextTarget = Math.max(0, Math.min(maxScrollY(), destination));
+      if (Math.abs(nextTarget - currentTarget) < .5) return false;
+      targetY = nextTarget;
+      if (!frame) {
+        previousFrameTime = 0;
+        frame = requestAnimationFrame(animateScroll);
+      }
+      return true;
+    }
+
+    document.addEventListener("wheel", event => {
+      if (!app.querySelector(".home-page") || !finePointer.matches || !event.cancelable ||
+        event.defaultPrevented || event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      if (event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable='true'], [data-native-scroll]")) return;
+
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+      if (scrollToY((frame ? targetY : window.scrollY) + event.deltaY * unit * 1.08)) event.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener("keydown", event => {
+      if (!app.querySelector(".home-page") || !finePointer.matches ||
+        event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.target instanceof Element && event.target.closest("button, a, input, textarea, select, [role='tab'], [contenteditable='true']")) return;
+
+      const step = Math.max(96, window.innerHeight * .82);
+      const target = event.key === "ArrowDown" ? window.scrollY + 96
+        : event.key === "ArrowUp" ? window.scrollY - 96
+          : ["PageDown", " "].includes(event.key) ? window.scrollY + step
+            : event.key === "PageUp" ? window.scrollY - step
+              : event.key === "Home" ? 0
+                : event.key === "End" ? maxScrollY()
+                  : null;
+      if (target !== null && scrollToY(target)) event.preventDefault();
+    }, true);
+
+    window.addEventListener("pointerdown", stop, true);
+    window.addEventListener("blur", stop);
+  }
+
   function loadProgress() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -577,5 +659,6 @@
   document.addEventListener("visibilitychange", syncMotion);
   brandButton.addEventListener("click", () => go("home/quiz"));
   homeButton.addEventListener("click", () => go("home/quiz"));
+  setupHomeWheelScroll();
   render();
 })();
