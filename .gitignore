@@ -1,0 +1,10 @@
+/.agents/
+/tmp/
+/skills-lock.json
+/download_ocr_language.py
+/extract_pdf_text.py
+/inspect_pdf_text.py
+/print_pasted_text.py
+/render_and_ocr.py
+__pycache__/
+*.py[cod]

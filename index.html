@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f2e9">
+  <meta name="description" content="อ่านสรุปบทเรียน ทำข้อสอบ และทบทวนจุดที่พลาด">
+  <title>ก่อนสอบ — อ่านก่อน ลองตอบ แล้วเข้าใจ</title>
+  <link rel="preload" href="./assets/fonts/prompt-700-thai.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/prompt-400-thai.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="site-header">
+      <button class="brand" id="brandButton" type="button" aria-label="กลับหน้าเลือกบท">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <rect x="5.5" y="4.5" width="29" height="31" rx="6" fill="#E7F0E5" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M12.5 5v30M18 20h10M18 26h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path class="logo-bookmark" d="M22 5.5h7v11l-3.5-2.4-3.5 2.4v-11Z" fill="#E8B96F" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>ก่อนสอบ<span class="brand-period">.</span></span>
+      </button>
+      <span class="header-note">อ่าน · ลองตอบ · เข้าใจ</span>
+      <button class="header-home" id="homeButton" type="button" hidden>ทุกบท</button>
+    </header>
+
+    <main id="app" tabindex="-1"></main>
+
+    <footer class="site-footer">
+      <div class="footer-signoff"><strong>ก่อนสอบ<span>.</span></strong><span>ค่อย ๆ เข้าใจทีละบท</span></div>
+      <span class="footer-storage">ความคืบหน้าบันทึกไว้ในอุปกรณ์นี้</span>
+    </footer>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
